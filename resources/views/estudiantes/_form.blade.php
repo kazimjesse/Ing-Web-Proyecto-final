@@ -1,58 +1,101 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
     <div>
-        <label class="block text-sm font-medium">Nombre</label>
-        <input type="text" name="nombre"
+        <label for="nombre" class="block text-sm font-semibold text-slate-900 mb-2">
+            Nombre
+            <span class="text-red-500">*</span>
+        </label>
+        <input type="text" 
+               id="nombre"
+               name="nombre"
                value="{{ old('nombre', $estudiante->nombre ?? '') }}"
-               class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+               class="input-university w-full"
+               placeholder="Ej: Juan"
+               required>
     </div>
 
     <div>
-        <label class="block text-sm font-medium">Apellido</label>
-        <input type="text" name="apellido"
+        <label for="apellido" class="block text-sm font-semibold text-slate-900 mb-2">
+            Apellido
+            <span class="text-red-500">*</span>
+        </label>
+        <input type="text" 
+               id="apellido"
+               name="apellido"
                value="{{ old('apellido', $estudiante->apellido ?? '') }}"
-               class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+               class="input-university w-full"
+               placeholder="Ej: Pérez"
+               required>
     </div>
 
     <div>
-        <label class="block text-sm font-medium">Cédula</label>
-        <input type="text" name="cedula"
+        <label for="cedula" class="block text-sm font-semibold text-slate-900 mb-2">
+            Cédula
+            <span class="text-red-500">*</span>
+        </label>
+        <input type="text" 
+               id="cedula"
+               name="cedula"
                value="{{ old('cedula', $estudiante->cedula ?? '') }}"
-               class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+               class="input-university w-full"
+               placeholder="Ej: 8-123-4567"
+               required>
     </div>
 
     <div>
-        <label class="block text-sm font-medium">Email</label>
-        <input type="email" name="email"
+        <label for="email" class="block text-sm font-semibold text-slate-900 mb-2">
+            Correo Electrónico
+            <span class="text-red-500">*</span>
+        </label>
+        <input type="email" 
+               id="email"
+               name="email"
                value="{{ old('email', $estudiante->email ?? '') }}"
-               class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+               class="input-university w-full"
+               placeholder="estudiante@ejemplo.com"
+               required>
     </div>
 
     <div>
-        <label class="block text-sm font-medium">Teléfono</label>
-        <input type="text" name="telefono"
+        <label for="telefono" class="block text-sm font-semibold text-slate-900 mb-2">
+            Teléfono
+        </label>
+        <input type="text" 
+               id="telefono"
+               name="telefono"
                value="{{ old('telefono', $estudiante->telefono ?? '') }}"
-               class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+               class="input-university w-full"
+               placeholder="Ej: 6123-4567">
     </div>
 
     <div>
-        <label class="block text-sm font-medium">Plan de estudios</label>
-        <select name="plan_estudios_id"
-                class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">
-            <option value="">Seleccione</option>
+        <label for="plan_estudios_id" class="block text-sm font-semibold text-slate-900 mb-2">
+            Plan de Estudios
+            <span class="text-red-500">*</span>
+        </label>
+        <select id="plan_estudios_id"
+                name="plan_estudios_id"
+                class="input-university w-full"
+                required>
+            <option value="">Seleccione un plan</option>
             @foreach ($planes as $plan)
                 <option value="{{ $plan->id }}"
                     {{ old('plan_estudios_id', $estudiante->plan_estudios_id ?? '') == $plan->id ? 'selected' : '' }}>
-                    {{ $plan->nombre }}
+                    {{ $plan->codigo }} - {{ $plan->nombre }}
                 </option>
             @endforeach
         </select>
     </div>
 
     <div class="md:col-span-2">
-        <label class="block text-sm font-medium">Dirección</label>
-        <textarea name="direccion" rows="3"
-                  class="mt-1 w-full rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600">{{ old('direccion', $estudiante->direccion ?? '') }}</textarea>
+        <label for="direccion" class="block text-sm font-semibold text-slate-900 mb-2">
+            Dirección
+        </label>
+        <textarea id="direccion"
+                  name="direccion" 
+                  rows="3"
+                  class="input-university w-full"
+                  placeholder="Dirección completa del estudiante">{{ old('direccion', $estudiante->direccion ?? '') }}</textarea>
     </div>
 
 </div>

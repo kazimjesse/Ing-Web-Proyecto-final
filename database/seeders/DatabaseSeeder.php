@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Usuario;
+use App\Models\User;  // ✅ CAMBIO AQUÍ
 use App\Models\PlanEstudios;
 use App\Models\Materia;
 use App\Models\Estudiante;
@@ -14,13 +14,10 @@ use App\Models\Grupo;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         // Crear usuario administrador
-        $admin = Usuario::create([
+        $admin = User::create([  // ✅ CAMBIO AQUÍ
             'email' => 'admin@matriculas.com',
             'password' => Hash::make('admin123'),
             'rol' => 'administrador',
@@ -29,7 +26,7 @@ class DatabaseSeeder extends Seeder
 
         echo "✓ Usuario administrador creado\n";
 
-        // Crear Plan de Estudios
+        // Crear Planes de Estudio
         $planSistemas = PlanEstudios::create([
             'nombre' => 'Ingeniería en Sistemas',
             'codigo' => 'ING-SIS',
@@ -50,7 +47,7 @@ class DatabaseSeeder extends Seeder
 
         echo "✓ Planes de estudio creados\n";
 
-        // Crear Materias para el plan de Sistemas
+        // Crear Materias (SIN plan_estudios_id)
         $materias = [
             [
                 'codigo' => 'MAT-101',
@@ -59,7 +56,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 4,
                 'horas_practicas' => 2,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 1,
             ],
             [
                 'codigo' => 'MAT-102',
@@ -68,7 +65,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 4,
                 'horas_practicas' => 2,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 2,
             ],
             [
                 'codigo' => 'PRG-101',
@@ -77,7 +74,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 3,
                 'horas_practicas' => 3,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 1,
             ],
             [
                 'codigo' => 'PRG-102',
@@ -86,7 +83,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 3,
                 'horas_practicas' => 3,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 2,
             ],
             [
                 'codigo' => 'BD-101',
@@ -95,7 +92,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 3,
                 'horas_practicas' => 2,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 3,
             ],
             [
                 'codigo' => 'BD-102',
@@ -104,7 +101,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 3,
                 'horas_practicas' => 2,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 4,
             ],
             [
                 'codigo' => 'WEB-101',
@@ -113,7 +110,7 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 2,
                 'horas_practicas' => 4,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 5,
             ],
             [
                 'codigo' => 'ALG-101',
@@ -122,31 +119,33 @@ class DatabaseSeeder extends Seeder
                 'creditos' => 4,
                 'horas_teoricas' => 3,
                 'horas_practicas' => 3,
-                'plan_estudios_id' => $planSistemas->id,
+                'semestre' => 3,
             ],
         ];
 
         $materiasCreadas = [];
         foreach ($materias as $materiaData) {
-            $materiasCreadas[] = Materia::create($materiaData);
+            $semestre = $materiaData['semestre'];
+            unset($materiaData['semestre']);
+            
+            $materia = Materia::create($materiaData);
+            
+            // Asociar materia al plan usando la tabla pivot
+            $materia->planesEstudios()->attach($planSistemas->id, [
+                'semestre' => $semestre,
+                'es_obligatoria' => true,
+            ]);
+            
+            $materiasCreadas[] = $materia;
         }
 
-        echo "✓ Materias creadas\n";
+        echo "✓ Materias creadas y asociadas al plan\n";
 
         // Crear prerequisitos
-        // Cálculo II requiere Cálculo I
         $materiasCreadas[1]->prerequisitos()->attach($materiasCreadas[0]->id);
-        
-        // Programación II requiere Programación I
         $materiasCreadas[3]->prerequisitos()->attach($materiasCreadas[2]->id);
-        
-        // Base de Datos II requiere Base de Datos I
         $materiasCreadas[5]->prerequisitos()->attach($materiasCreadas[4]->id);
-        
-        // Desarrollo Web requiere Programación II
         $materiasCreadas[6]->prerequisitos()->attach($materiasCreadas[3]->id);
-        
-        // Estructuras de Datos requiere Programación II
         $materiasCreadas[7]->prerequisitos()->attach($materiasCreadas[3]->id);
 
         echo "✓ Prerequisitos configurados\n";
@@ -160,6 +159,7 @@ class DatabaseSeeder extends Seeder
                 'especialidad' => 'Matemáticas Aplicadas',
                 'email' => 'carlos.rodriguez@universidad.edu',
                 'telefono' => '6000-0001',
+                'activo' => true,
             ],
             [
                 'nombre' => 'María',
@@ -168,6 +168,7 @@ class DatabaseSeeder extends Seeder
                 'especialidad' => 'Ingeniería de Software',
                 'email' => 'maria.gonzalez@universidad.edu',
                 'telefono' => '6000-0002',
+                'activo' => true,
             ],
             [
                 'nombre' => 'José',
@@ -176,6 +177,7 @@ class DatabaseSeeder extends Seeder
                 'especialidad' => 'Bases de Datos',
                 'email' => 'jose.perez@universidad.edu',
                 'telefono' => '6000-0003',
+                'activo' => true,
             ],
             [
                 'nombre' => 'Ana',
@@ -184,6 +186,7 @@ class DatabaseSeeder extends Seeder
                 'especialidad' => 'Desarrollo Web',
                 'email' => 'ana.martinez@universidad.edu',
                 'telefono' => '6000-0004',
+                'activo' => true,
             ],
             [
                 'nombre' => 'Luis',
@@ -192,13 +195,13 @@ class DatabaseSeeder extends Seeder
                 'especialidad' => 'Algoritmos y Estructuras de Datos',
                 'email' => 'luis.fernandez@universidad.edu',
                 'telefono' => '6000-0005',
+                'activo' => true,
             ],
         ];
 
         $docentesCreados = [];
         foreach ($docentes as $docenteData) {
-            // Crear usuario para el docente
-            $usuario = Usuario::create([
+            $usuario = User::create([  // ✅ CAMBIO AQUÍ
                 'email' => $docenteData['email'],
                 'password' => Hash::make('password123'),
                 'rol' => 'docente',
@@ -221,6 +224,7 @@ class DatabaseSeeder extends Seeder
                 'telefono' => '6100-0001',
                 'direccion' => 'Ciudad de Panamá',
                 'plan_estudios_id' => $planSistemas->id,
+                'activo' => true,
             ],
             [
                 'nombre' => 'Laura',
@@ -230,6 +234,7 @@ class DatabaseSeeder extends Seeder
                 'telefono' => '6100-0002',
                 'direccion' => 'Panamá Oeste',
                 'plan_estudios_id' => $planSistemas->id,
+                'activo' => true,
             ],
             [
                 'nombre' => 'Miguel',
@@ -239,6 +244,7 @@ class DatabaseSeeder extends Seeder
                 'telefono' => '6100-0003',
                 'direccion' => 'Colón',
                 'plan_estudios_id' => $planSistemas->id,
+                'activo' => true,
             ],
             [
                 'nombre' => 'Sofia',
@@ -248,6 +254,7 @@ class DatabaseSeeder extends Seeder
                 'telefono' => '6100-0004',
                 'direccion' => 'Chiriquí',
                 'plan_estudios_id' => $planSistemas->id,
+                'activo' => true,
             ],
             [
                 'nombre' => 'Diego',
@@ -257,13 +264,13 @@ class DatabaseSeeder extends Seeder
                 'telefono' => '6100-0005',
                 'direccion' => 'Panamá Este',
                 'plan_estudios_id' => $planSistemas->id,
+                'activo' => true,
             ],
         ];
 
         $estudiantesCreados = [];
         foreach ($estudiantes as $estudianteData) {
-            // Crear usuario para el estudiante
-            $usuario = Usuario::create([
+            $usuario = User::create([  // ✅ CAMBIO AQUÍ
                 'email' => $estudianteData['email'],
                 'password' => Hash::make('password123'),
                 'rol' => 'estudiante',
@@ -278,36 +285,30 @@ class DatabaseSeeder extends Seeder
 
         // Crear Horarios
         $horarios = [
-            // Lunes
-            ['dia' => 'Lunes', 'hora_inicio' => '07:00', 'hora_fin' => '09:00', 'tipo' => 'teorico'],
-            ['dia' => 'Lunes', 'hora_inicio' => '09:00', 'hora_fin' => '11:00', 'tipo' => 'teorico'],
-            ['dia' => 'Lunes', 'hora_inicio' => '13:00', 'hora_fin' => '15:00', 'tipo' => 'practico'],
-            ['dia' => 'Lunes', 'hora_inicio' => '15:00', 'hora_fin' => '17:00', 'tipo' => 'practico'],
+            ['dia' => 'Lunes', 'hora_inicio' => '07:00:00', 'hora_fin' => '09:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Lunes', 'hora_inicio' => '09:00:00', 'hora_fin' => '11:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Lunes', 'hora_inicio' => '13:00:00', 'hora_fin' => '15:00:00', 'tipo' => 'practico'],
+            ['dia' => 'Lunes', 'hora_inicio' => '15:00:00', 'hora_fin' => '17:00:00', 'tipo' => 'practico'],
             
-            // Martes
-            ['dia' => 'Martes', 'hora_inicio' => '07:00', 'hora_fin' => '09:00', 'tipo' => 'teorico'],
-            ['dia' => 'Martes', 'hora_inicio' => '09:00', 'hora_fin' => '11:00', 'tipo' => 'teorico'],
-            ['dia' => 'Martes', 'hora_inicio' => '13:00', 'hora_fin' => '15:00', 'tipo' => 'laboratorio'],
-            ['dia' => 'Martes', 'hora_inicio' => '15:00', 'hora_fin' => '17:00', 'tipo' => 'laboratorio'],
+            ['dia' => 'Martes', 'hora_inicio' => '07:00:00', 'hora_fin' => '09:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Martes', 'hora_inicio' => '09:00:00', 'hora_fin' => '11:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Martes', 'hora_inicio' => '13:00:00', 'hora_fin' => '15:00:00', 'tipo' => 'laboratorio'],
+            ['dia' => 'Martes', 'hora_inicio' => '15:00:00', 'hora_fin' => '17:00:00', 'tipo' => 'laboratorio'],
             
-            // Miércoles
-            ['dia' => 'Miércoles', 'hora_inicio' => '07:00', 'hora_fin' => '09:00', 'tipo' => 'teorico'],
-            ['dia' => 'Miércoles', 'hora_inicio' => '09:00', 'hora_fin' => '11:00', 'tipo' => 'teorico'],
-            ['dia' => 'Miércoles', 'hora_inicio' => '13:00', 'hora_fin' => '15:00', 'tipo' => 'practico'],
+            ['dia' => 'Miércoles', 'hora_inicio' => '07:00:00', 'hora_fin' => '09:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Miércoles', 'hora_inicio' => '09:00:00', 'hora_fin' => '11:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Miércoles', 'hora_inicio' => '13:00:00', 'hora_fin' => '15:00:00', 'tipo' => 'practico'],
             
-            // Jueves
-            ['dia' => 'Jueves', 'hora_inicio' => '07:00', 'hora_fin' => '09:00', 'tipo' => 'teorico'],
-            ['dia' => 'Jueves', 'hora_inicio' => '09:00', 'hora_fin' => '11:00', 'tipo' => 'teorico'],
-            ['dia' => 'Jueves', 'hora_inicio' => '13:00', 'hora_fin' => '15:00', 'tipo' => 'laboratorio'],
+            ['dia' => 'Jueves', 'hora_inicio' => '07:00:00', 'hora_fin' => '09:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Jueves', 'hora_inicio' => '09:00:00', 'hora_fin' => '11:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Jueves', 'hora_inicio' => '13:00:00', 'hora_fin' => '15:00:00', 'tipo' => 'laboratorio'],
             
-            // Viernes
-            ['dia' => 'Viernes', 'hora_inicio' => '07:00', 'hora_fin' => '09:00', 'tipo' => 'teorico'],
-            ['dia' => 'Viernes', 'hora_inicio' => '09:00', 'hora_fin' => '11:00', 'tipo' => 'teorico'],
-            ['dia' => 'Viernes', 'hora_inicio' => '13:00', 'hora_fin' => '15:00', 'tipo' => 'practico'],
+            ['dia' => 'Viernes', 'hora_inicio' => '07:00:00', 'hora_fin' => '09:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Viernes', 'hora_inicio' => '09:00:00', 'hora_fin' => '11:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Viernes', 'hora_inicio' => '13:00:00', 'hora_fin' => '15:00:00', 'tipo' => 'practico'],
             
-            // Sábado
-            ['dia' => 'Sábado', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'tipo' => 'teorico'],
-            ['dia' => 'Sábado', 'hora_inicio' => '10:00', 'hora_fin' => '12:00', 'tipo' => 'practico'],
+            ['dia' => 'Sábado', 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'tipo' => 'teorico'],
+            ['dia' => 'Sábado', 'hora_inicio' => '10:00:00', 'hora_fin' => '12:00:00', 'tipo' => 'practico'],
         ];
 
         $horariosCreados = [];
@@ -321,48 +322,53 @@ class DatabaseSeeder extends Seeder
         $grupos = [
             [
                 'codigo' => '2024-1-MAT101-A',
-                'materia_id' => $materiasCreadas[0]->id, // Cálculo I
-                'docente_id' => $docentesCreados[0]->id, // Carlos Rodríguez
+                'materia_id' => $materiasCreadas[0]->id,
+                'docente_id' => $docentesCreados[0]->id,
                 'periodo_academico' => '2024-1',
                 'cupo_maximo' => 30,
                 'cupo_actual' => 0,
-                'horarios' => [0, 3], // Lunes 7-9 y 13-15
+                'activo' => true,
+                'horarios' => [0, 3],
             ],
             [
                 'codigo' => '2024-1-PRG101-A',
-                'materia_id' => $materiasCreadas[2]->id, // Programación I
-                'docente_id' => $docentesCreados[1]->id, // María González
+                'materia_id' => $materiasCreadas[2]->id,
+                'docente_id' => $docentesCreados[1]->id,
                 'periodo_academico' => '2024-1',
                 'cupo_maximo' => 25,
                 'cupo_actual' => 0,
-                'horarios' => [4, 7], // Martes 7-9 y 15-17
+                'activo' => true,
+                'horarios' => [4, 7],
             ],
             [
                 'codigo' => '2024-1-BD101-A',
-                'materia_id' => $materiasCreadas[4]->id, // Base de Datos I
-                'docente_id' => $docentesCreados[2]->id, // José Pérez
+                'materia_id' => $materiasCreadas[4]->id,
+                'docente_id' => $docentesCreados[2]->id,
                 'periodo_academico' => '2024-1',
                 'cupo_maximo' => 28,
                 'cupo_actual' => 0,
-                'horarios' => [8, 10], // Miércoles 7-9 y 13-15
+                'activo' => true,
+                'horarios' => [8, 10],
             ],
             [
                 'codigo' => '2024-1-WEB101-A',
-                'materia_id' => $materiasCreadas[6]->id, // Desarrollo Web
-                'docente_id' => $docentesCreados[3]->id, // Ana Martínez
+                'materia_id' => $materiasCreadas[6]->id,
+                'docente_id' => $docentesCreados[3]->id,
                 'periodo_academico' => '2024-1',
                 'cupo_maximo' => 20,
                 'cupo_actual' => 0,
-                'horarios' => [11, 13], // Jueves 7-9 y 13-15
+                'activo' => true,
+                'horarios' => [11, 13],
             ],
             [
                 'codigo' => '2024-1-ALG101-A',
-                'materia_id' => $materiasCreadas[7]->id, // Estructuras de Datos
-                'docente_id' => $docentesCreados[4]->id, // Luis Fernández
+                'materia_id' => $materiasCreadas[7]->id,
+                'docente_id' => $docentesCreados[4]->id,
                 'periodo_academico' => '2024-1',
                 'cupo_maximo' => 25,
                 'cupo_actual' => 0,
-                'horarios' => [14, 16], // Viernes 7-9 y 13-15
+                'activo' => true,
+                'horarios' => [14, 16],
             ],
         ];
 
@@ -372,7 +378,6 @@ class DatabaseSeeder extends Seeder
             
             $grupo = Grupo::create($grupoData);
             
-            // Asignar horarios al grupo
             foreach ($horarioIds as $horarioIndex) {
                 $grupo->horarios()->attach($horariosCreados[$horarioIndex]->id);
             }
@@ -383,7 +388,7 @@ class DatabaseSeeder extends Seeder
         echo "\n=== Seeder completado exitosamente ===\n";
         echo "Credenciales:\n";
         echo "- Admin: admin@matriculas.com / admin123\n";
-        echo "- Docentes: [email] / password123\n";
-        echo "- Estudiantes: [email] / password123\n";
+        echo "- Docentes: [email docente] / password123\n";
+        echo "- Estudiantes: [email estudiante] / password123\n";
     }
 }
