@@ -1,107 +1,211 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Editar Docente: {{ $docente->nombre }} {{ $docente->apellido }}
-            </h2>
+            <div>
+                <h2 class="font-serif font-bold text-3xl text-university-900 leading-tight">
+                    Editar Docente
+                </h2>
+                <p class="mt-1 text-sm text-slate-600">
+                    {{ $docente->nombre }} {{ $docente->apellido }} • 
+                    <span class="font-mono font-semibold text-university-700">{{ $docente->cedula }}</span>
+                </p>
+            </div>
             <a href="{{ route('docentes.index') }}"
-               class="px-4 py-2 rounded bg-gray-200 text-gray-900 hover:bg-gray-300">
+               class="inline-flex items-center px-4 py-2 bg-slate-100 border border-slate-300 rounded-md font-medium text-sm text-slate-700 hover:bg-slate-200 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
                 Volver
             </a>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            @if ($errors->any())
-                <div class="mb-4 p-3 rounded bg-red-100 text-red-800">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $e) <li>{{ $e }}</li> @endforeach
-                    </ul>
+        {{-- Errores de validación --}}
+        @if ($errors->any())
+            <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-semibold text-red-800">Hay errores en el formulario:</h3>
+                        <ul class="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            @if (session('error'))
-                <div class="mb-4 p-3 rounded bg-red-100 text-red-800">{{ session('error') }}</div>
-            @endif
+        @if (session('error'))
+            <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="ml-3 text-sm text-red-800 font-medium">{{ session('error') }}</p>
+                </div>
+            </div>
+        @endif
 
-            <div class="bg-white dark:bg-gray-800 p-6 rounded shadow">
-                <form method="POST" action="{{ route('docentes.update', $docente) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{-- Formulario --}}
+        <div class="university-card">
+            <div class="university-card-header">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <h3 class="text-lg font-semibold">Modificar Información del Docente</h3>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <form method="POST" action="{{ route('docentes.update', $docente) }}" class="space-y-6">
                     @csrf
                     @method('PUT')
 
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Nombre</label>
-                        <input name="nombre" value="{{ old('nombre', $docente->nombre) }}" required
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="nombre" class="block text-sm font-semibold text-slate-900 mb-2">
+                                Nombre
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text"
+                                   id="nombre"
+                                   name="nombre"
+                                   value="{{ old('nombre', $docente->nombre) }}"
+                                   class="input-university w-full"
+                                   required>
+                        </div>
+
+                        <div>
+                            <label for="apellido" class="block text-sm font-semibold text-slate-900 mb-2">
+                                Apellido
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text"
+                                   id="apellido"
+                                   name="apellido"
+                                   value="{{ old('apellido', $docente->apellido) }}"
+                                   class="input-university w-full"
+                                   required>
+                        </div>
+
+                        <div>
+                            <label for="cedula" class="block text-sm font-semibold text-slate-900 mb-2">
+                                Cédula
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text"
+                                   id="cedula"
+                                   name="cedula"
+                                   value="{{ old('cedula', $docente->cedula) }}"
+                                   class="input-university w-full"
+                                   required>
+                        </div>
+
+                        <div>
+                            <label for="especialidad" class="block text-sm font-semibold text-slate-900 mb-2">
+                                Especialidad
+                            </label>
+                            <input type="text"
+                                   id="especialidad"
+                                   name="especialidad"
+                                   value="{{ old('especialidad', $docente->especialidad) }}"
+                                   class="input-university w-full">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="email" class="block text-sm font-semibold text-slate-900 mb-2">
+                                Correo Electrónico
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   value="{{ old('email', $docente->email) }}"
+                                   class="input-university w-full"
+                                   required>
+                        </div>
+
+                        <div>
+                            <label for="telefono" class="block text-sm font-semibold text-slate-900 mb-2">
+                                Teléfono
+                            </label>
+                            <input type="text"
+                                   id="telefono"
+                                   name="telefono"
+                                   value="{{ old('telefono', $docente->telefono) }}"
+                                   class="input-university w-full">
+                        </div>
+
+                        <div class="flex items-center">
+                            <label class="flex items-center cursor-pointer p-3 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors w-full">
+                                <input type="checkbox"
+                                       name="activo"
+                                       value="1"
+                                       class="rounded border-slate-300 text-university-700 shadow-sm focus:ring-university-500"
+                                       {{ old('activo', $docente->activo) ? 'checked' : '' }}>
+                                <span class="ml-3">
+                                    <span class="text-sm font-semibold text-slate-900">Docente Activo</span>
+                                    <span class="block text-xs text-slate-600 mt-1">Puede impartir clases</span>
+                                </span>
+                            </label>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Apellido</label>
-                        <input name="apellido" value="{{ old('apellido', $docente->apellido) }}" required
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
+                    {{-- Cambiar Contraseña --}}
+                    <div class="pt-6 border-t border-slate-200">
+                        <h4 class="text-sm font-semibold text-slate-900 mb-2">Cambiar Contraseña</h4>
+                        <p class="text-xs text-slate-600 mb-4">Deja estos campos vacíos si no deseas cambiar la contraseña</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="password" class="block text-sm font-semibold text-slate-900 mb-2">
+                                    Nueva Contraseña
+                                </label>
+                                <input type="password"
+                                       id="password"
+                                       name="password"
+                                       class="input-university w-full"
+                                       placeholder="••••••••">
+                            </div>
+
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-semibold text-slate-900 mb-2">
+                                    Confirmar Contraseña
+                                </label>
+                                <input type="password"
+                                       id="password_confirmation"
+                                       name="password_confirmation"
+                                       class="input-university w-full"
+                                       placeholder="••••••••">
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Cédula</label>
-                        <input name="cedula" value="{{ old('cedula', $docente->cedula) }}" required
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Especialidad</label>
-                        <input name="especialidad" value="{{ old('especialidad', $docente->especialidad) }}"
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Email (login)</label>
-                        <input type="email" name="email" value="{{ old('email', $docente->email) }}" required
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Teléfono</label>
-                        <input name="telefono" value="{{ old('telefono', $docente->telefono) }}"
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
-                    </div>
-
-                    <div class="flex items-center gap-2 mt-6">
-                        <input type="checkbox" name="activo" value="1" {{ old('activo', $docente->activo) ? 'checked' : '' }}>
-                        <span class="text-sm text-gray-700 dark:text-gray-200">Activo</span>
-                    </div>
-
-                    <div class="md:col-span-2 border-t dark:border-gray-700 pt-4 mt-2">
-                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                            Cambiar Password (opcional)
-                        </h3>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Nuevo Password</label>
-                        <input type="password" name="password"
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm mb-1 text-gray-700 dark:text-gray-200">Confirmar Password</label>
-                        <input type="password" name="password_confirmation"
-                               class="w-full rounded border-gray-300 dark:bg-gray-900 dark:border-gray-700">
-                    </div>
-
-                    <div class="md:col-span-2 flex gap-2 pt-2">
-                        <button class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
-                            Actualizar
-                        </button>
+                    {{-- Botones --}}
+                    <div class="flex justify-end gap-3 pt-6 border-t border-slate-200">
                         <a href="{{ route('docentes.show', $docente) }}"
-                           class="px-4 py-2 rounded bg-gray-200 text-gray-900 hover:bg-gray-300">
+                           class="inline-flex items-center px-6 py-2.5 bg-white border-2 border-slate-300 rounded-md font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                             Cancelar
                         </a>
+
+                        <button type="submit"
+                                class="btn-university inline-flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Actualizar Docente
+                        </button>
                     </div>
 
                 </form>
             </div>
         </div>
+
     </div>
 </x-app-layout>
