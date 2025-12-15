@@ -74,15 +74,13 @@ CREATE TABLE `materias` (
   `creditos` int DEFAULT '3',
   `horas_teoricas` int DEFAULT '3',
   `horas_practicas` int DEFAULT '0',
-  `plan_estudios_id` bigint unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `materias_codigo_unique` (`codigo`),
-  KEY `idx_codigo` (`codigo`),
-  KEY `idx_plan_estudios` (`plan_estudios_id`),
-  CONSTRAINT `materias_plan_estudios_id_foreign` FOREIGN KEY (`plan_estudios_id`) REFERENCES `plan_estudios` (`id`) ON DELETE CASCADE
+  KEY `idx_codigo` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 --
 -- Tabla: prerequisitos
