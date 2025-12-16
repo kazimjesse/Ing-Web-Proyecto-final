@@ -1,58 +1,148 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Matrículas - Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Requisitos de Instalación del Sistema
 
-## About Laravel
+### Requisitos del Sistema
+- **PHP:** >= 8.1
+- **Composer:** >= 2.0
+- **MySQL:** >= 8.0
+- **Node.js:** >= 16.x
+- **NPM:** >= 8.x
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Requisitos del Servidor
+- Extensiones PHP requeridas:
+  - OpenSSL
+  - PDO
+  - Mbstring
+  - Tokenizer
+  - XML
+  - Ctype
+  - JSON
+  - BCMath
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Instalación Paso a Paso
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### 1. Clonar el Repositorio
+```bash
+git clone <repository-url>
+cd sistema-matriculas
+```
 
-## Learning Laravel
+#### 2. Instalar Dependencias PHP
+```bash
+composer install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+#### 3. Configurar Variables de Entorno
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+#### 4. Configurar Base de Datos
+Editar el archivo `.env` con las credenciales de MySQL:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sistema_matriculas
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### 5. Crear la Base de Datos
+```bash
+mysql -u root -p
+CREATE DATABASE sistema_matriculas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+exit;
+```
 
-## Laravel Sponsors
+#### 6. Ejecutar Migraciones y Seeders
+```bash
+php artisan migrate --seed
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### 7. Instalar Dependencias Frontend
+```bash
+npm install
+npm run dev
+```
 
-### Premium Partners
+#### 8. Iniciar el Servidor de Desarrollo
+```bash
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+El sistema estará disponible en: `http://localhost:8000`
 
-## Contributing
+### Credenciales por Defecto
+- **Usuario Administrador:**
+  - Email: admin@matriculas.com
+  - Password: admin123
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Estructura del Proyecto
+```
+sistema-matriculas/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Models/
+│   └── Services/
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+├── resources/
+│   ├── views/
+│   └── js/
+├── routes/
+│   ├── web.php
+│   └── api.php
+└── public/
+```
 
-## Code of Conduct
+### Configuraciones Adicionales
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Permisos de Directorios
+```bash
+chmod -R 775 storage
+chmod -R 775 bootstrap/cache
+```
 
-## Security Vulnerabilities
+#### Optimización (Producción)
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm run build
+```
+
+### Solución de Problemas
+
+#### Error de Permisos
+```bash
+sudo chown -R $USER:www-data storage
+sudo chown -R $USER:www-data bootstrap/cache
+```
+
+#### Limpiar Cache
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+### Tecnologías Utilizadas
+- **Framework:** Laravel 10.x
+- **Base de Datos:** MySQL 8.0
+- **Patrón de Diseño:** MVC
+- **Paradigma:** Programación Orientada a Objetos
+- **Frontend:** Blade Templates, Bootstrap 5
+- **Autenticación:** Laravel Breeze
+
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
