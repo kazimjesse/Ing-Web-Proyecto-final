@@ -35,7 +35,7 @@ composer install
 
 #### 3. Configurar Variables de Entorno
 ```bash
-cp .env.example .env
+cp .env.example .env o crea el archivo .env en la raiz del proyecto
 php artisan key:generate
 ```
 
@@ -59,16 +59,29 @@ exit;
 
 #### 6. Ejecutar Migraciones y Seeders
 ```bash
+//va a dar error, continua
 php artisan migrate --seed
 ```
 
-#### 7. Instalar Dependencias Frontend
+#### 7. Importar Backup de la database
+- En el phpmyadmin seleccionas la db ''Sistema_matriculas"
+- En el menu parte de superior seleccionas "import"
+- Busca el archivo "backup_database.sql"
+- Seleccionalo e importa
+- En el paso anterior se creo el usuario admin en la tabla usuarios de Sistema_matriculas, eliminalo (Si no se crea pasa al siguiente paso)
+
+#### 8. Insertar datos
+```bash
+php artisan db:seed
+```
+
+#### 9. Instalar Dependencias Frontend
 ```bash
 npm install
 npm run dev
 ```
 
-#### 8. Iniciar el Servidor de Desarrollo
+#### 10. Iniciar el Servidor de Desarrollo
 ```bash
 php artisan serve
 ```
